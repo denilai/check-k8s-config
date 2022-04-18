@@ -1,13 +1,13 @@
 import yaml
 import typing
 
-def d_crawler_abs_path(yamld, path_list) :
+def find_absolute(yamld, path_list) :
     """
     absolute path is the location of the key in the yaml file 
     e.g spec.template.metadata.labels.app
     """
     if isinstance(yamld, list):
-        return list(map(lambda x: d_crawler_abs_path(x, path_list),yamld))
+        return list(map(lambda x: find_absolute(x, path_list),yamld))
     if len(path_list) == 0:
         return yamld
     #for 3.x python
@@ -15,7 +15,7 @@ def d_crawler_abs_path(yamld, path_list) :
     head, tail = path_list[0], path_list[1:]
     if isinstance(yamld, dict):
         if head in yamld.keys(): 
-            return d_crawler_abs_path(yamld[head],tail)
+            return find_absolute(yamld[head],tail)
 
 
 def yaml_to_dict (filename):
@@ -23,17 +23,17 @@ def yaml_to_dict (filename):
         content = yaml.safe_load(f)
     return content
 
-def d_crawler(yamld: dict, target: str) -> list:
+def find_key(yamld: dict, target: str) -> list:
     found=[]
     for (k,v) in yamld.items():
         if k == target:
             found += [{k:v}]
         if isinstance(v, dict):
-            found += d_crawler(v, target)
+            found += find_key(v, target)
         if isinstance(v, list):
             for i in v:
                 if isinstance(i,dict):
-                    found += d_crawler(i, target)
+                    found += find_key(i, target)
     return found
 
 
@@ -52,17 +52,17 @@ def filterl(l):
 
 def main():
     content = yaml_to_dict("pod.yaml")
-    found = d_crawler(content,"ports")
+    found = find_key(content,"ports")
     print(found)
-    found = d_crawler(content,"stage")
+    found = find_key(content,"stage")
     print(found)
-    found = d_crawler(content,"namespace")
+    found = find_key(content,"namespace")
     print(found)
-    found = filterl(d_crawler_abs_path(content,["spec","containers","ports"]))
+    found = filterl(find_absolute(content,["spec","containers","ports"]))
     print(found)
-    found = filterl(d_crawler_abs_path(content,["metadata","name"]))
+    found = filterl(find_absolute(content,["metadata","name"]))
     print(found)
-    found = filterl(d_crawler_abs_path(content,["metadata","name","stage"]))
+    found = filterl(find_absolute(content,["metadata","name","stage"]))
     print(found)
     return found
 
