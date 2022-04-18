@@ -1,13 +1,18 @@
 import yaml
 import typing
 
-def find_absolute(yamld, path_list) :
+def find_absolute(yamld, path_string):
+    return find_absolute_h(yamld, path_string.split("."))
+
+
+
+def find_absolute_h(yamld, path_list) :
     """
     absolute path is the location of the key in the yaml file 
     e.g spec.template.metadata.labels.app
     """
     if isinstance(yamld, list):
-        return list(map(lambda x: find_absolute(x, path_list),yamld))
+        return list(map(lambda x: find_absolute_h(x, path_list),yamld))
     if len(path_list) == 0:
         return yamld
     #for 3.x python
@@ -15,13 +20,16 @@ def find_absolute(yamld, path_list) :
     head, tail = path_list[0], path_list[1:]
     if isinstance(yamld, dict):
         if head in yamld.keys(): 
-            return find_absolute(yamld[head],tail)
+            return find_absolute_h(yamld[head],tail)
+    return []
 
 
 def yaml_to_dict (filename):
     with open(filename) as f:
         content = yaml.safe_load(f)
     return content
+
+
 
 def find_key(yamld: dict, target: str) -> list:
     found=[]
@@ -58,11 +66,12 @@ def main():
     print(found)
     found = find_key(content,"namespace")
     print(found)
-    found = filterl(find_absolute(content,["spec","containers","ports"]))
+    found = filterl(find_absolute(content,"spec.containers.ports"))
     print(found)
-    found = filterl(find_absolute(content,["metadata","name"]))
     print(found)
-    found = filterl(find_absolute(content,["metadata","name","stage"]))
+    found = filterl(find_absolute(content,"metadata.name"))
+    print(found)
+    found = filterl(find_absolute(content,"metadata.name.stage"))
     print(found)
     return found
 

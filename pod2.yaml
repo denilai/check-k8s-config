@@ -1,0 +1,50 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Pod
+  metadata:
+    annotations:
+      kubernetes.io/psp: psp-open
+    creationTimestamp: "2021-09-25T10:08:58Z"
+    generateName: timeseries-canary-7d7bcf8699-
+    labels:
+      app: timeseries-canary
+      pod-template-hash: 7d7bcf8699
+    name: timeseries-canary-7d7bcf8699-qn8lr
+    namespace: timeseries
+    ownerReferences:
+    - apiVersion: apps/v1
+      blockOwnerDeletion: true
+      controller: true
+      kind: ReplicaSet
+      name: timeseries-canary-7d7bcf8699
+      uid: 55ba3a4f-01b9-11ec-9048-0050568c4aa0
+    resourceVersion: "671686670"
+    selfLink: /api/v1/namespaces/timeseries/pods/timeseries-canary-7d7bcf8699-qn8lr
+    uid: 8fb788f4-73bf-4a31-bcb4-bd476744e46b
+  spec:
+    containers:
+    - args:
+      - -c
+      - |
+        for d in /additional-certs-*; do \
+        if [ -d "" ] && ls -A ; then cp /* /usr/local/share/ca-certificates; fi; done; \
+        update-ca-certificates &&  \
+        if [ -d "/zac-cert" ]; then cp /zac-cert/* /usr/local/share/ca-certificates; fi && \
+        if [ -d "/uaa-cert" ]; then cp /uaa-cert/* /usr/local/share/ca-certificates; fi &&  \
+        update-ca-certificates &&  \ 
+        export VCAP_SERVICES=$(cat /generated/vcap-services.json) && \ 
+        env && /time-series-service-canary
+      command:
+      - /bin/bash
+      env:
+      - name: VCAP_APPLICATION
+        value: '{"instance_id":"nope."}'
+      - name: GOPACKAGENAME
+        value: github.build.ge.com/predix-data-services/time-series-service-canary
+      - name: CF_HOST
+        value: grc-apps.svc.ice.ge.com
+      - name: CF_USERNAME
+        value: ci-robot-ds
+      - name: CF_PASSWORD
+
