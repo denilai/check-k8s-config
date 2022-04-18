@@ -5,7 +5,7 @@ metadata:
   namespace: default
 spec:
   containers:
-  - name: devopsschool1
+  - name: devopsschool2
     image: scmgalaxy/nginx-devopsschoolv1
     ports:
     - name: nginx-port

@@ -56,6 +56,23 @@ def filterl(l):
         return filterl(l[1:])
     else:
         return [l[0]] + filterl(l[1:])
+
+def dict_in_depth(prefix,yamld):
+    depth = []
+    i=0
+    if isinstance(yamld,str):
+        return prefix +"."+ yamld
+    if isinstance(yamld,dict):
+        for (k,v) in yamld.items():
+            depth.append(dict_in_depth(prefix+"."+k,v))
+    if isinstance(yamld,list):
+        depth=list(map(lambda x: dict_in_depth(prefix,x),yamld))
+    return depth
+
+def element_cutter(l):
+    return list(map(lambda x: x[1:],l))
+
+
             
 
 def main():
