@@ -1,0 +1,18 @@
+  name: nginx
+  namespace: default
+spec:
+  containers:
+  - name: devopsschool2
+    image: scmgalaxy/nginx-devopsschoolv1
+    ports:
+    - name: nginx-port
+      namespace: dd
+      containerPort: 80
+      stage: 12
+      hello: there
+  - name: nginx
+    image: nginx
+    ports:
+    - containerPort: 80
+      name: asdasdf
+  - name: faq
